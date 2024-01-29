@@ -3,6 +3,7 @@
 #include "model.h"
 #include "light.h"
 #include "skybox.h"
+#include "instance.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -46,8 +47,12 @@ int main() {
 
 	Shader shader("shader/shader.vert", "shader/shader.frag");
 	Shader skyboxShader("shader/skybox.vert", "shader/skybox.frag");
+	Shader instanceShader("shader/instance.vert", "shader/instance.frag");
 
-	Model ourModel("resources/backpack/backpack.obj", false);
+	Model ourModel("resources/planet/planet.obj", false);
+	Model rock("resources/rock/rock.obj", false);
+
+	Instance instance(rock, ourModel, shader, instanceShader);
 
 	Skybox skybox;
 
@@ -64,25 +69,21 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.use();
-
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 projection = glm::mat4(1.0f);
 
 		view = camera.get_view_matrix();
 		projection = glm::perspective(glm::radians(camera.Fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 
+		instanceShader.use();
+		instanceShader.set_mat4("projection", projection);
+		instanceShader.set_mat4("view", view);
+
+		shader.use();
 		shader.set_mat4("view", view);		
 		shader.set_mat4("projection", projection);
 
-		glm::mat4 model = glm::mat4(0.0002f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
-		shader.set_mat4("model", model);
-		
-		shader.set_vec3("cameraPos", camera.position);
-
-		ourModel.Draw(shader);
+		instance.Draw();
 
 		glDepthFunc(GL_LEQUAL);
 

@@ -12,11 +12,14 @@ class Model {
 public:
 	Model(std::string const &path, bool gamma);
 	void Draw(Shader &shader);
+
+	std::vector<Mesh> meshes;
+	std::vector<Texture> textures_loaded;
+
+
 private:
 	bool gammaCorrection;
-	std::vector<Mesh> meshes;
 	std::string directory;
-	std::vector<Texture> textures_loaded;
 
 	void loadModel(std::string const &path);
 	void processNode(aiNode *node, const aiScene *scene);
