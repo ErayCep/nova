@@ -75,27 +75,15 @@ int main() {
 		view = camera.get_view_matrix();
 		projection = glm::perspective(glm::radians(camera.Fov), (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 100.0f);
 
-		instanceShader.use();
-		instanceShader.set_mat4("projection", projection);
-		instanceShader.set_mat4("view", view);
-
 		shader.use();
 		shader.set_mat4("view", view);		
 		shader.set_mat4("projection", projection);
 
-		instance.Draw();
+		glm::mat4 model = glm::mat4(1.0f);
 
-		glDepthFunc(GL_LEQUAL);
+		shader.set_mat4("model", model);
 
-		skyboxShader.use();
-
-		view = glm::mat4(glm::mat3(camera.get_view_matrix()));
-		skyboxShader.set_mat4("view", view);
-		skyboxShader.set_mat4("projection", projection);
-
-		skybox.Draw();
-
-		glDepthFunc(GL_LESS);
+		ourModel.Draw(shader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
